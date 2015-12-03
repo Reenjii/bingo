@@ -22,3 +22,9 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# Node modules
+node_modules
+
+# output folder
+dist

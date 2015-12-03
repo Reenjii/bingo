@@ -1,0 +1,11 @@
+{
+	"root": "/tmp/bingo/data",
+	"views": "/tmp/bingo/dist/views",
+	"static": "/tmp/bingo/dist/static",
+	"log": "/tmp/bingo/bingo.log",
+	"stdout": true,
+	"verbosity": 15,
+	"port": 1337,
+	"floodThreshold": 10,
+	"cleanThreshold": 3600
+}

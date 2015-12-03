@@ -1,0 +1,73 @@
+:root {
+	--bgColor: #eee;
+}
+
+body {
+	background: var(--bgColor);
+	padding-bottom: 80px;
+	padding-top: 80px;
+}
+
+#paste #data {
+	background: white;
+	padding: 5px;
+}
+
+#discussion {
+	margin-top: 10px;
+}
+
+textarea {
+	margin-top: 10px;
+}
+
+.paste-container {
+	border: 1px solid #7f7f7f;
+	margin-top: 5px;
+}
+
+.paste-meta {
+	background: #bbb;
+}
+
+.comment-meta {
+	background: #bbb;
+}
+
+.comment-meta-author {
+	margin-right: 3em;
+}
+
+.comment-data {
+	padding: 5px;
+}
+
+#reply {
+	margin-top: 10px;
+}
+
+#comments {
+	border: 1px solid #7f7f7f;
+}
+
+.comment {
+	background: #ddd;
+	margin-bottom: 5px;
+}
+
+.comment > .comment {
+	border-left: 1px solid #7f7f7f;
+	border-top: 1px solid #7f7f7f;
+
+	/* Reply comments are shifted to the right */
+	margin-left: 30px;
+	margin-top: 5px;
+}
+
+.comment:last-child {
+	margin-bottom: 0;
+}
+
+#paste-comment {
+	margin-top: 10px;
+}

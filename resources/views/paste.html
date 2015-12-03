@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset=utf-8 />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Bingo</title>
+
+	<!-- Styles -->
+	<link href="/static/css/vendor.min.css" rel="stylesheet">
+	<link href="/static/css/bingo.min.css" rel="stylesheet">
+
+</head>
+<body>
+
+	<!-- navbar -->
+	<nav class="navbar navbar-fixed-top navbar-dark bg-inverse">
+		<button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar">
+			&#9776;
+		</button>
+		<div class="collapse navbar-toggleable-xs" id="navbar">
+			<a class="navbar-brand" href="/">Bingo</a>
+			<ul class="nav navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="#">About</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container">
+
+		<div id="alerts">
+
+		{{/* Display burn alert if needed */}}
+		{{ if .Paste }}
+			{{ if .Paste.Burn }}
+				<div class="alert alert-warning alert-dismissible fade in" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+					This paste was configured to be destroyed once read.
+					Do not close this window, paste data cannot be displayed again.
+				</div>
+			{{ end }}
+		{{ end }}
+
+		{{/* Display delete alert if needed */}}
+		{{ if .Deleted }}
+			<div class="alert alert-success alert-dismissible fade in" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				Paste deleted.
+			</div>
+		{{ end }}
+
+		{{/* Display paste not found error if needed */}}
+		{{ if eq .Code 404 }}
+			<div class="alert alert-danger alert-dismissible fade in" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				Paste does not exist, has expired or has been deleted.
+			</div>
+		{{ end }}
+
+		{{/* Display paste not found error if needed */}}
+		{{ if eq .Code 500 }}
+			<div class="alert alert-danger alert-dismissible fade in" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+					<span class="sr-only">Close</span>
+				</button>
+				Server error.
+			</div>
+		{{ end }}
+
+		</div>
+
+		<div id="paste">
+			<div class="form-inline">
+				<button class="btn btn-primary btn-sm" onclick="clone();return false;">Clone</button>
+				<button class="btn btn-primary btn-sm" onclick="raw();return false;">RAW</button>
+				<button class="btn btn-primary btn-sm" onclick="newPaste();return false;">New</button>
+			</div>
+
+			<div class="paste-container">
+				<div class="paste-meta">Posted on <span id="paste-postdate"></span>, expires on <span id="paste-expire"></span></div>
+				<div id="data"></div>
+			</div>
+		</div>
+
+		<div id="discussion">
+			<h5>Discussion</h5>
+			<div id="comments"></div>
+			<button id="paste-comment" class="btn btn-primary btn-sm">Write a comment</button>
+		</div>
+
+		<div id="form">
+
+			<div class="form-inline">
+
+				<div class="btn-group" data-toggle="buttons">
+					<label class="btn btn-primary">
+						<input type="checkbox" autocomplete="off" name="burn"> Burn after reading
+					</label>
+
+					<label class="btn btn-primary">
+						<input type="checkbox" autocomplete="off" name="discussion"> Enable discussions
+					</label>
+
+					<label class="btn btn-primary">
+						<input type="checkbox" autocomplete="off" name="highlight"> Syntax highlighting
+					</label>
+				</div>
+
+				<div class="form-group">
+					<select class="form-control" name="expire">
+						<option value="5">5 seconds</option>
+						<option value="60">1 minute</option>
+						<option value="300">5 minutes</option>
+						<option value="3600">1 hour</option>
+						<option value="86400">1 day</option>
+						<option value="604800">1 week</option>
+						<option value="2592000">1 month</option>
+						<option value="31536000">1 year</option>
+					</select>
+
+					<button class="btn btn-primary" onclick="send();return false;">Send</button>
+				</div>
+
+			</div>
+
+			<div class="form-group">
+				<textarea class="form-control" rows="5"></textarea>
+			</div>
+
+		</div>
+
+		<div id="meta" hidden>
+			<div id="plain"></div>
+			<textarea id="meta-paste">{{ .JPaste }}</textarea>
+			<textarea id="meta-plain"></textarea>
+		</div>
+
+		<!-- Templates -->
+		<div hidden>
+
+			<div id="template-alert">
+				<div class="alert alert-dismissible fade in" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						<span class="sr-only">Close</span>
+					</button>
+				</div>
+			</div>
+
+			<div id="template-reply">
+				<div>
+					<div class="form">
+						<div class="btn-group" data-toggle="buttons">
+							<label class="btn btn-primary">
+								<input type="checkbox" autocomplete="off" name="highlight"> Syntax highlighting
+							</label>
+						</div>
+						<input type="text" name="author" placeholder="Nickname" class="form-control form-control-sm">
+						<textarea class="form-control" rows="3"></textarea>
+						<button class="btn btn-primary btn-sm">Send</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="template-comment">
+				<div class="comment">
+					<div class="comment-meta">
+						<span class="comment-meta-author"></span> <span class="comment-meta-postdate"></span>
+					</div>
+					<div class="comment-data"></div>
+					<div class="comment-reply">
+						<button class="btn btn-primary btn-sm">Reply</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<!-- container -->
+
+	<!-- Scripts -->
+	<script src="/static/js/vendor.min.js"></script>
+	<script src="/static/js/bingo.min.js"></script>
+</body>
+</html>
